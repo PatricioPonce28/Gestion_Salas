@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salas - Sistema de Salas</title>
+    <link rel="stylesheet" href="../static/salas.css">
+</head>
+<body>
+    <div class="container">
+        <h2>GESTIÓN DE SALAS</h2>
+        
+        <div class="header-section">
+            <p class="header-title">Registro de Salas</p>
+            <p class="header-description">
+                Complete el formulario para registrar una nueva sala en el sistema
+            </p>
+        </div>
+        
+        <div class="form-section">
+            <div class="form-header">
+                <h3>Nueva Sala</h3>
+                <p>Ingrese los datos de la sala. El código debe ser único en el sistema.</p>
+            </div>
+            
+            {% if error %}
+            <p class="error-message">{{ error }}</p>
+            {% endif %}
+            
+            <form method="POST">
+                <input type="text" name="nombre" placeholder="Nombre de la sala" required>
+                <input type="text" name="codigo" placeholder="Código único" required>
+                <input type="number" name="capacidad" placeholder="Capacidad total" required min="1" max="500">
+                <select name="estado" required>
+                    <option value="">Seleccionar</option>
+                    <option value="Disponible">Disponible</option>
+                    <option value="Ocupada">Ocupada </option>
+                </select>
+                <button type="submit">Registrar Nueva Sala</button>
+            </form>
+            
+            <div class="info-tip">
+                <p>
+                    <strong>Información:</strong> Una vez registrada, la sala aparecerá en la tabla inferior. 
+                    Asegúrese de usar un código único para evitar conflictos.
+                </p>
+            </div>
+        </div>
+        
+        <div class="table-header">
+            <div class="table-title">
+                <h3>Salas Registradas</h3>
+                <p>Listado completo de todas las salas en el sistema</p>
+            </div>
+            <div class="total-badge">
+                <p>Total: {{ salas|length }} sala{% if salas|length != 1 %}s{% endif %}</p>
+            </div>
+        </div>
+        
+        <div class="table-section">
+            {% if salas %}
+            <div class="stats-cards">
+                <div class="stat-card stat-card-available">
+                    <p class="stat-card-label">Disponibles</p>
+                    <p class="stat-card-number">
+                        {{ salas|selectattr('estado', 'equalto', 'Disponible')|list|length }}
+                    </p>
+                </div>
+                <div class="stat-card stat-card-occupied">
+                    <p class="stat-card-label">Ocupadas</p>
+                    <p class="stat-card-number">
+                        {{ salas|selectattr('estado', 'equalto', 'Ocupada')|list|length }}
+                    </p>
+                </div>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre de la Sala</th>
+                        <th>Código Único</th>
+                        <th>Capacidad</th>
+                        <th>Estado Actual</th>
+                        <th>Registrado Por</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sala in salas %}
+                    <tr>
+                        <td class="td-id">{{ loop.index }}</td>
+                        <td class="td-name">{{ sala.nombre }}</td>
+                        <td class="td-code">{{ sala.codigo }}</td>
+                        <td>{{ sala.capacidad }} personas</td>
+                        <td class="{% if sala.estado == 'Disponible' %}td-status-available{% else %}td-status-occupied{% endif %}">
+                            {{ sala.estado }}
+                        </td>
+                        <td class="td-user">{{ sala.usuario }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <div class="table-footer">
+                <p>
+                    Mostrando {{ salas|length }} registro{% if salas|length != 1 %}s{% endif %} en total. 
+                    Los datos se actualizan en tiempo real.
+                </p>
+            </div>
+            {% else %}
+            <div class="no-data">
+                <p class="no-data-title">No hay salas registradas todavía</p>
+                <p class="no-data-description">
+                    Use el formulario de arriba para registrar la primera sala del sistema
+                </p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="bottom-section">
+            <a href="/dashboard" class="back-link">Volver al Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

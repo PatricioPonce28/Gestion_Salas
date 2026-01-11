@@ -1,0 +1,6 @@
+# Framework web
+Flask==3.0.0
+
+# Para MySQL (descomentar cuando uses base de datos)
+# mysql-connector-python==8.2.0
+# python-dotenv==1.0.0
