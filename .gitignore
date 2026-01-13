@@ -12,3 +12,10 @@ __pycache__/
 # Archivos de sistema
 .DS_Store
 Thumbs.db
+
+# Credenciales Mysql 
+MYSQL_HOST=mysql
+MYSQL_USER=root
+MYSQL_PASSWORD=root
+MYSQL_DB=salas_db
+

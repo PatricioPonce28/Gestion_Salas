@@ -1,13 +1,55 @@
-version: '3'
+version: '3.8'
 
 services:
+
+  app:
+    build: .
+    container_name: flask-app
+    ports:
+      - "5000:5000"           # Opcional: solo para debug directo, puedes quitarlo si usas solo nginx
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+    volumes:
+      - .:/app                # Para desarrollo (hot-reload si usas debug)
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    ports:
+      - "8081:80"             # Cambié a 8081 para que no choque con nginx en 8080
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      PMA_ARBITRARY: 1        # Permite conectar a cualquier servidor (útil en desarrollo)
+    depends_on:
+      - mysql
+    restart: unless-stopped
+
   nginx:
     container_name: NginxServer
     build:
-     context: ./nginx
-     dockerfile: Dockerfile 
+      context: ./nginx
+      dockerfile: Dockerfile
     ports:
-      - "8080:80"
+      - "8080:80"             # Nginx en el puerto 8080 del host
     depends_on:
       - app
-  
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro   # Si tienes archivos de config extra
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
