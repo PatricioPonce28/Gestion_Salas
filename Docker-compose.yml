@@ -2,6 +2,15 @@ version: '3.8'
 
 services:
 
+  nginx:
+    container_name: NginxServer
+    build:
+      context: /nginx
+      dockerfile: Dockerfile
+    ports:
+      - 8082:80             # Nginx en el puerto 8080 del host
+    depends_on:
+        - app
   app:
     build: .
     container_name: flask-app
@@ -38,18 +47,6 @@ services:
       - mysql
     restart: unless-stopped
 
-  nginx:
-    container_name: NginxServer
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
-    ports:
-      - "8080:80"             # Nginx en el puerto 8080 del host
-    depends_on:
-      - app
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro   # Si tienes archivos de config extra
-    restart: unless-stopped
 
 volumes:
   mysql-data:
