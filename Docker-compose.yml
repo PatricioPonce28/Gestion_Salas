@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  nginx:
+    container_name: NginxServer
+    build:
+     context: ./nginx
+     dockerfile: Dockerfile 
+    ports:
+      - "8080:80"
+    depends_on:
+      - app
+  
