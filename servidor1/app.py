@@ -1,24 +1,33 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import mysql.connector
 import os
+import time
 
 app = Flask(__name__)
 app.secret_key = "clave_secreta"
 
-DB_HOST = os.environ.get('MYSQL_HOST')
+DB_HOST = os.environ.get('MYSQL_HOST', 'localhost')
 DB_USER = os.environ.get('MYSQL_USER', 'root')
 DB_PASSWORD = os.environ.get('MYSQL_PASSWORD', 'root')
 DB_NAME = os.environ.get('MYSQL_DB', 'salas_db')
 
-# Conexión a la DB
-def get_db_connection():
-    conn = mysql.connector.connect(
-        host=DB_HOST,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        database=DB_NAME
-    )
-    return conn
+# Conexión a la DB con reintentos
+def get_db_connection(retries=5, delay=2):
+    for attempt in range(retries):
+        try:
+            conn = mysql.connector.connect(
+                host=DB_HOST,
+                user=DB_USER,
+                password=DB_PASSWORD,
+                database=DB_NAME
+            )
+            return conn
+        except mysql.connector.Error as err:
+            if attempt < retries - 1:
+                print(f"Intento {attempt + 1}/{retries}: No se pudo conectar a MySQL. Reintentando en {delay}s...")
+                time.sleep(delay)
+            else:
+                raise err
 
 # Crear la tabla al iniciar la aplicación (sin esperar request)
 def init_db():

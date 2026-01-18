@@ -1,52 +1,123 @@
-version: '3.8'
+version: '3'
 
 services:
 
   nginx:
     container_name: NginxServer
     build:
-      context: /nginx
+      context: ./nginx
       dockerfile: Dockerfile
     ports:
-      - 8082:80             # Nginx en el puerto 8080 del host
+      - 8080:80
     depends_on:
-        - app
-  app:
-    build: .
-    container_name: flask-app
-    ports:
-      - "5000:5000"           # Opcional: solo para debug directo, puedes quitarlo si usas solo nginx
-    env_file:
-      - .env
-    depends_on:
-      - mysql
-    volumes:
-      - .:/app                # Para desarrollo (hot-reload si usas debug)
-    restart: unless-stopped
+      - servidor1
+      - servidor2
+      - servidor3
+    networks:
+      - gestion-salas
 
-  mysql:
-    image: mysql:5.7
-    container_name: mysql-db
+  db-master:
+    image: mysql:8.0
+    container_name: db-master
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: salas_db
+    command: --server-id=1 --log-bin=mysql-bin --binlog-do-db=salas_db
+    ports:
+      - "3308:3306"
+    networks:
+      - gestion-salas
     volumes:
-      - mysql-data:/var/lib/mysql
-    restart: unless-stopped
+      - vol_master:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5      
+  
+  db-slave:
+    image: mysql:8.0
+    container_name: db-slave
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: salas_db
+    command: --server-id=2 --log-bin=mysql-bin --binlog-do-db=salas_db
+    ports:
+      - "3309:3306"
+    networks:
+      - gestion-salas
+    volumes:
+      - vol_slave:/var/lib/mysql
 
+  servidor1:
+    build:
+      context: ./servidor1
+      dockerfile: Dockerfile
+    container_name: Servidor1
+    ports:
+      - "5001:5000"
+    environment:
+      MYSQL_HOST: db-master
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_DB: salas_db
+    networks:
+      - gestion-salas
+    depends_on:
+      db-master:
+        condition: service_healthy
+
+  servidor2:
+    build:
+      context: ./servidor2
+      dockerfile: Dockerfile
+    container_name: Servidor2
+    ports:
+      - "5002:5000"
+    environment:
+      MYSQL_HOST: db-master
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_DB: salas_db
+    networks:
+      - gestion-salas
+    depends_on:
+      db-master:
+        condition: service_healthy
+
+  servidor3:
+    build:
+      context: ./servidor3
+      dockerfile: Dockerfile
+    container_name: Servidor3
+    ports:
+      - "5003:5000"
+    environment:
+      MYSQL_HOST: db-master
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_DB: salas_db
+    networks:
+      - gestion-salas
+    depends_on:
+      db-master:
+        condition: service_healthy
+          
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin
-    ports:
-      - "8081:80"             # Cambié a 8081 para que no choque con nginx en 8080
     environment:
-      PMA_HOST: mysql
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
-      PMA_ARBITRARY: 1        # Permite conectar a cualquier servidor (útil en desarrollo)
-    depends_on:
-      - mysql
-    restart: unless-stopped
+      PMA_HOSTS: db-master, db-slave
+      PMA_ARBITRARY: 1
+    ports:
+      - "8081:80"
+    networks:
+      - gestion-salas
 
+networks:
+  gestion-salas:
+    driver: bridge
 
 volumes:
-  mysql-data:
+  vol_master:
+  vol_slave:

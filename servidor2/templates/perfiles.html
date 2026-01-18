@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfiles - Sistema de Salas</title>
+    <link rel="stylesheet" href="../static/perfiles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>PERFILES DE USUARIO</h2>
+        
+        <div class="header-section">
+            <p class="header-title">Estadísticas de Registro por Usuario</p>
+            <p class="header-description">
+                Análisis detallado de la actividad de cada usuario en el sistema
+            </p>
+        </div>
+        
+        {% if resumen %}
+        <div class="stats-summary">
+            <div class="stat-card">
+                <p class="stat-card-label">USUARIOS ACTIVOS</p>
+                <p class="stat-number">{{ resumen|length }}</p>
+                <p class="stat-card-description">usuarios han registrado salas</p>
+            </div>
+            
+            <div class="stat-card">
+                <p class="stat-card-label">TOTAL REGISTROS</p>
+                {% set total = namespace(value=0) %}
+                {% for usuario, datos in resumen.items() %}
+                    {% set total.value = total.value + datos.total %}
+                {% endfor %}
+                <p class="stat-number">{{ total.value }}</p>
+                <p class="stat-card-description">salas en el sistema</p>
+            </div>
+            
+            <div class="stat-card">
+                <p class="stat-card-label">PROMEDIO POR USUARIO</p>
+                <p class="stat-number">
+                    {% if resumen|length > 0 %}
+                        {{ "%.1f"|format(total.value / resumen|length) }}
+                    {% else %}
+                        0
+                    {% endif %}
+                </p>
+                <p class="stat-card-description">salas por usuario</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="section-title">
+            <h3>Detalle de Registros</h3>
+            <p>Información completa de las salas registradas por cada usuario del sistema</p>
+        </div>
+        
+        <div class="table-section">
+            {% if resumen %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Total de Salas</th>
+                        <th>Códigos Registrados</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario, datos in resumen.items() %}
+                    <tr>
+                        <td class="td-id">{{ loop.index }}</td>
+                        <td class="td-username">{{ usuario }}</td>
+                        <td class="td-total">{{ datos.total }}</td>
+                        <td class="td-codes">
+                            {% for codigo in datos.salas %}
+                                <span class="code-tag">{{ codigo }}</span>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <div class="activity-analysis">
+                <h4>Análisis de Actividad</h4>
+                <div class="activity-grid">
+                    {% for usuario, datos in resumen.items() %}
+                    <div class="activity-card">
+                        <p class="activity-card-user">{{ usuario }}</p>
+                        <p class="activity-card-info">
+                            {{ datos.total }} sala{% if datos.total != 1 %}s{% endif %} registrada{% if datos.total != 1 %}s{% endif %}
+                        </p>
+                        <p class="activity-card-percentage">
+                            {% set percentage = (datos.total / total.value * 100)|round(1) if total.value > 0 else 0 %}
+                            {{ percentage }}% del total
+                        </p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="system-info">
+                <p>
+                    <strong>Información del Sistema:</strong> Los datos se actualizan automáticamente cada vez que 
+                    se registra una nueva sala. Esta vista proporciona un resumen completo de la actividad de todos los usuarios.
+                </p>
+            </div>
+            {% else %}
+            <div class="no-data">
+                <p class="no-data-title">No hay registros disponibles</p>
+                <p class="no-data-description">
+                    Los datos aparecerán aquí una vez que los usuarios comiencen a registrar salas
+                </p>
+                <a href="/salas" class="no-data-link">Ir a Registrar Salas</a>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="bottom-section">
+            <a href="/dashboard" class="back-link">Volver al Dashboard</a>
+        </div>
+        
+        <div class="footer">
+            <p class="footer-text">Última actualización: Tiempo real | Rooms Manager v1.0</p>
+        </div>
+    </div>
+</body>
+</html>

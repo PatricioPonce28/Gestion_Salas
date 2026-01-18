@@ -1,0 +1,213 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a0000 0%, #330000 50%, #1a0000 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(184, 134, 11, 0.03) 2px,
+        rgba(184, 134, 11, 0.03) 4px
+    );
+    animation: shimmer 20s linear infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(50px); }
+}
+
+.login-container {
+    background: rgba(20, 0, 0, 0.95);
+    border: 2px solid #b8860b;
+    border-radius: 15px;
+    padding: 50px 40px;
+    max-width: 450px;
+    width: 100%;
+    box-shadow: 0 10px 40px rgba(184, 134, 11, 0.3),
+                0 0 100px rgba(220, 20, 60, 0.2);
+    position: relative;
+    z-index: 1;
+}
+
+.login-container::before {
+    content: '🎬';
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 4em;
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+}
+
+h2 {
+    color: #ffd700;
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8),
+                 0 0 20px rgba(255, 215, 0, 0.5);
+    letter-spacing: 3px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #999;
+    margin-bottom: 30px;
+    font-size: 0.95em;
+}
+
+.error-message {
+    background: rgba(220, 20, 60, 0.2);
+    border: 1px solid #dc143c;
+    color: #ff6b6b;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-group {
+    position: relative;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid #b8860b;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: #ffd700;
+    background: rgba(0, 0, 0, 0.7);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+input::placeholder {
+    color: #999;
+}
+
+button[type="submit"] {
+    background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
+    color: #ffd700;
+    border: 2px solid #b8860b;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+    background: linear-gradient(135deg, #dc143c 0%, #ff1744 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(184, 134, 11, 0.5);
+    color: #fff;
+}
+
+button[type="submit"]:active {
+    transform: translateY(0);
+}
+
+.footer {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.footer-text {
+    color: #666;
+    font-size: 0.75em;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .login-container {
+        padding: 40px 25px;
+    }
+    
+    .login-container::before {
+        font-size: 3em;
+        top: -35px;
+    }
+    
+    h2 {
+        font-size: 2em;
+        letter-spacing: 2px;
+    }
+    
+    .subtitle {
+        font-size: 0.85em;
+    }
+    
+    input[type="text"],
+    input[type="password"] {
+        padding: 12px 15px;
+        font-size: 0.95em;
+    }
+    
+    button[type="submit"] {
+        padding: 12px 25px;
+        font-size: 1em;
+    }
+    
+    .info-box {
+        padding: 12px;
+    }
+}
+
+@media (max-width: 400px) {
+    .login-container {
+        padding: 30px 20px;
+    }
+    
+    h2 {
+        font-size: 1.8em;
+    }
+}

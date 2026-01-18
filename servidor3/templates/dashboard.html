@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sistema de Salas</title>
+    <link rel="stylesheet" href="../static/dashboard.css">
+</head>
+<body>
+    <div class="container">
+        <h2>ROOMS MANAGER</h2>
+        
+        <div class="header-section">
+            <p class="welcome-text">Bienvenido de nuevo, <strong>{{ usuario }}</strong></p>
+            <p class="subtitle-text">Panel de Control Principal</p>
+        </div>
+        
+        <div class="stats-box">
+            <p class="small-text">Total de salas en el sistema:</p>
+            <strong>{{ total }}</strong>
+            <p class="info-text">
+                {% if total == 0 %}
+                    No hay salas registradas aún. Comienza registrando tu primera sala.
+                {% elif total == 1 %}
+                    Hay 1 sala activa en el sistema
+                {% else %}
+                    Todas las salas están siendo monitoreadas
+                {% endif %}
+            </p>
+        </div>
+        
+        <div class="quick-access">
+            <h3>Accesos Rápidos</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <p class="stat-number">{{ total }}</p>
+                    <p class="stat-label">Salas Totales</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-number">3</p>
+                    <p class="stat-label">Número de Usuarios</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="links-container">
+            <a href="/salas">
+                <div class="link-content">
+                    <span>Gestionar Salas</span>
+                    <span class="link-description">Registrar y visualizar</span>
+                </div>
+            </a>
+            <a href="/perfiles">
+                <div class="link-content">
+                    <span>Perfiles de Usuario</span>
+                    <span class="link-description">Ver estadísticas</span>
+                </div>
+            </a>
+        </div>
+        
+        <div class="note-box">
+            <p>
+                <strong>Nota:</strong> Este sistema permite la gestión completa de salas. 
+                Puedes registrar nuevas salas, monitorear su estado y ver estadísticas detalladas por usuario.
+            </p>
+        </div>
+        
+        <a href="/logout" class="logout-link">Cerrar Sesión</a>
+        
+        <div class="footer">
+            <p class="footer-text">Rooms Manager v1.0 | Sesión activa: {{ usuario }}</p>
+        </div>
+    </div>
+</body>
+</html>
