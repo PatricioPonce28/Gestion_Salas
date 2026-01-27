@@ -28,7 +28,7 @@ services:
     networks:
       - gestion-salas
     volumes:
-      - vol_master:/var/lib/mysql
+      - ./data/master:/var/lib/mysql  
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -47,7 +47,7 @@ services:
     networks:
       - gestion-salas
     volumes:
-      - vol_slave:/var/lib/mysql
+      - ./data/slave:/var/lib/mysql
 
   servidor1:
     build:
@@ -118,6 +118,4 @@ networks:
   gestion-salas:
     driver: bridge
 
-volumes:
-  vol_master:
-  vol_slave:
+volumes: {}
